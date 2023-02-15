@@ -1,16 +1,9 @@
 on:
-  # Trigger analysis when pushing in master or pull requests, and when creating
-  # a pull request.
-  push:
-    branches:
-      - '**'        # matches every branch
-  
-  
+  # Required workflows only work on pull requests.
   pull_request:
     types: [opened, synchronize, reopened]
 
 name: Required SonarQube Scan
-run-name: Scan - ${{ github.event.head_commit.message }}
 jobs:
   sonarqube:
     runs-on: ubuntu-latest
