@@ -2,9 +2,7 @@ on:
   # Trigger analysis when pushing in master or pull requests, and when creating
   # a pull request.
   push:
-    branches:
-      - main
-      - master # TODO: Make this prettier later
+  
   pull_request:
     types: [opened, synchronize, reopened]
 
