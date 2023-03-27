@@ -1,19 +1,53 @@
 on:
   # Required workflows only work on pull requests.
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 name: Required SonarQube Scan
 jobs:
   sonarqube:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repo
+        uses: actions/checkout@v3
         with:
           # Disabling shallow clone is recommended for improving relevancy of reporting
           fetch-depth: 0
-      - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@master # TODO set this to a sha instead i dont trust sonarqube
+      - name: Check for Language
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            c-sharp:
+              - '**/*.cs'
+      - name: SonarQube Scan C#
+        if: steps.filter.outputs.c-sharp == 'true'
+        id: c-sharp
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: highbyte/sonarscan-dotnet@v2.2.1
+        with:
+          # The key of the SonarQube project
+          sonarProjectKey: ${{ github.event.repository.name }}
+          # The name of the SonarQube project
+          sonarProjectName: ${{ github.event.repository.name }}
+          # The SonarQube server URL. For SonarCloud, skip this setting.
+          sonarHostname: ${{ secrets.SONAR_URL }}
+      - name: SonarQube Scan Generic
+        if: steps.filter.outputs.c-sharp == 'false'
+        id: generic
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
+        uses: sonarsource/sonarqube-scan-action@v1.2.0
+        with:
+          args: >
+            -Dsonar.projectKey=${{ github.event.repository.name }}
+            -Dsonar.projectName=${{ github.event.repository.name }}
+
+
+
+## Could we even perhaps ignore the project file considering we could just pass all these variables as variables to the action directly
+## Its not the stupidest idea. I dunno if you set gate here but it could be nice :)
+## That leaves the project file to the user fully i think. I dunno tbh its just annoying we have to use a file?
