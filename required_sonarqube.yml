@@ -28,11 +28,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: highbyte/sonarscan-dotnet@v2.2.1
         with:
-          # The key of the SonarQube project
           sonarProjectKey: ${{ github.event.repository.name }}
-          # The name of the SonarQube project
           sonarProjectName: ${{ github.event.repository.name }}
-          # The SonarQube server URL. For SonarCloud, skip this setting.
           sonarHostname: ${{ secrets.SONAR_URL }}
       - name: SonarQube Scan Generic
         if: steps.filter.outputs.c-sharp == 'false'
@@ -45,9 +42,3 @@ jobs:
           args: >
             -Dsonar.projectKey=${{ github.event.repository.name }}
             -Dsonar.projectName=${{ github.event.repository.name }}
-
-
-
-## Could we even perhaps ignore the project file considering we could just pass all these variables as variables to the action directly
-## Its not the stupidest idea. I dunno if you set gate here but it could be nice :)
-## That leaves the project file to the user fully i think. I dunno tbh its just annoying we have to use a file?
