@@ -2,6 +2,10 @@ on:
   # Required workflows only work on pull requests.
   pull_request:
     types: [ opened, synchronize, reopened ]
+ 
+  pull_request_comment:
+    
+    
 
 name: Required SonarQube Scan
 jobs:
