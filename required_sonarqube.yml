@@ -1,13 +1,22 @@
 on:
   # Required workflows only work on pull requests.
   pull_request:
-    types: [ opened, synchronize, reopened ]    
+    types: [ opened, synchronize, reopened ]
+
+env:
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VSS_NUGET_EXTERNAL_FEED_ENDPOINTS: ${{ secrets.VSS_NUGET_EXTERNAL_FEED_ENDPOINTS }}
+  NUGET_PACKAGE_REGISTRY_URL: ${{ secrets.NUGET_PACKAGE_REGISTRY_URL }} 
 
 name: Required SonarQube Scan
 jobs:
-  sonarqube:
-    runs-on: ubuntu-latest
-    steps:
+  sonarqube-filter:
+    runs-on: sonarqube
+    outputs:
+      c-sharp: ${{ steps.filter.outputs.c-sharp }}
+    steps:  
       - name: Checkout Repo
         uses: actions/checkout@v3
         with:
@@ -20,23 +29,87 @@ jobs:
           filters: |
             c-sharp:
               - '**/*.cs'
-      - name: SonarQube Scan C#
-        if: steps.filter.outputs.c-sharp == 'true'
-        id: c-sharp
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: highbyte/sonarscan-dotnet@v2.2.1
+
+  sonarqube-c-sharp:
+    runs-on: sonarqube
+    needs: sonarqube-filter
+    if:  ${{ needs.sonarqube-filter.outputs.c-sharp == 'true' }}
+    container: mcr.microsoft.com/dotnet/sdk:6.0
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      VSS_NUGET_EXTERNAL_FEED_ENDPOINTS: ${{ secrets.VSS_NUGET_EXTERNAL_FEED_ENDPOINTS }}
+      NUGET_PACKAGE_REGISTRY_URL: ${{ secrets.NUGET_PACKAGE_REGISTRY_URL }}
+    steps:  
+      - name: Checkout Repo
+        uses: actions/checkout@v3
         with:
-          sonarProjectKey: ${{ github.event.repository.name }}
-          sonarProjectName: ${{ github.event.repository.name }}
-          sonarHostname: ${{ secrets.SONAR_URL }}
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+
+      - name: SonarQube Scan C# - Download Dependencies
+        id: c-sharp
+        run: |
+          apt-get update && apt-get -y -q install openjdk-11-jre-headless
+          dotnet tool install -g dotnet-sonarscanner
+          dotnet tool install -g dotnet-coverage
+          dotnet tool install -g trx2junit
+
+          # TODO: Clean this up by using an image with all this installed
+          # Appending GITHUB_PATH doesn't effect current step https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-system-path
+          export PATH="$PATH:/root/.dotnet/tools"
+          export PATH="$PATH:/github/home/.dotnet/tools"
+          echo "/root/.dotnet/tools" >> $GITHUB_PATH
+          echo "/github/home/.dotnet/tools" >> $GITHUB_PATH
+
+          # Azure Artifacts auth
+          wget -qO- https://aka.ms/install-artifacts-credprovider.sh | bash
+
+      - name: SonarQube Scan C# - SonarQube Begin
+        run: |
+          dotnet-sonarscanner begin \
+            /d:sonar.host.url="$SONAR_HOST_URL" \
+            /k:"${{ github.event.repository.name }}" \
+            /d:sonar.login="$SONAR_TOKEN" \
+            /d:sonar.verbose=true \
+            /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
+            /d:sonar.pullrequest.branch="$GITHUB_HEAD_REF" \
+            /d:sonar.pullrequest.base="$GITHUB_BASE_REF" \
+            /d:sonar.cs.vscoveragexml.reportsPaths=/root/project/code-coverage/coverage.xml \
+            /d:sonar.cs.vstest.reportsPaths=/root/project/test-results/*.trx \
+            /d:sonar.sources=src/ \
+            /d:sonar.exclusions=src/*Tests/ \
+            /d:sonar.tests=src/ \
+            /d:sonar.test.inclusions=src/*Tests/
+
+      - name: SonarQube Scan C# - Build
+        run: |
+          dotnet build src --source $NUGET_PACKAGE_REGISTRY_URL
+
+      - name: SonarQube Scan C# - Test
+        continue-on-error: true # dotnet test returns an error if the tests fails. Can't find a flag for making it ignore failed tests...
+        run: |
+          dotnet-coverage collect 'dotnet test src --logger "trx" --results-directory:"test-results"' -f xml -o '/root/project/code-coverage/coverage.xml'
+
+      - name: SonarQube Scan C# - SonarQube End
+        if: always()
+        run: |
+          dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+
+
+  sonarqube-generic:
+    runs-on: sonarqube
+    needs: sonarqube-filter
+    if:  ${{ needs.sonarqube-filter.outputs.c-sharp == 'false' }}
+    steps:  
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+    
       - name: SonarQube Scan Generic
-        if: steps.filter.outputs.c-sharp == 'false'
         id: generic
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
         uses: sonarsource/sonarqube-scan-action@v1.2.0
         with:
           args: >
