@@ -8,7 +8,7 @@ env:
   SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   VSS_NUGET_EXTERNAL_FEED_ENDPOINTS: ${{ secrets.VSS_NUGET_EXTERNAL_FEED_ENDPOINTS }}
-  NUGET_PACKAGE_REGISTRY_URL: ${{ secrets.NUGET_PACKAGE_REGISTRY_URL }} 
+  AZURE_ARTIFACTS_NUGET_REGISTRY_URL: ${{ secrets.AZURE_ARTIFACTS_NUGET_REGISTRY_URL }} 
 
 name: Required SonarQube Scan
 jobs:
@@ -35,11 +35,6 @@ jobs:
     needs: sonarqube-filter
     if:  ${{ needs.sonarqube-filter.outputs.c-sharp == 'true' }}
     container: mcr.microsoft.com/dotnet/sdk:6.0
-    env:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      VSS_NUGET_EXTERNAL_FEED_ENDPOINTS: ${{ secrets.VSS_NUGET_EXTERNAL_FEED_ENDPOINTS }}
-      NUGET_PACKAGE_REGISTRY_URL: ${{ secrets.NUGET_PACKAGE_REGISTRY_URL }}
     steps:  
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -84,7 +79,7 @@ jobs:
 
       - name: SonarQube Scan C# - Build
         run: |
-          dotnet build src --source $NUGET_PACKAGE_REGISTRY_URL
+          dotnet build src --source $AZURE_ARTIFACTS_NUGET_REGISTRY_URL
 
       - name: SonarQube Scan C# - Test
         continue-on-error: true # dotnet test returns an error if the tests fails. Can't find a flag for making it ignore failed tests...
