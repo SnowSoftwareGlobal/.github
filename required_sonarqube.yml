@@ -48,7 +48,6 @@ jobs:
           apt-get update && apt-get -y -q install openjdk-11-jre-headless
           dotnet tool install -g dotnet-sonarscanner
           dotnet tool install -g dotnet-coverage
-          dotnet tool install -g trx2junit
 
           # TODO: Clean this up by using an image with all this installed
           # Appending GITHUB_PATH doesn't effect current step https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-system-path
