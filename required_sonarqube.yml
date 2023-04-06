@@ -78,7 +78,7 @@ jobs:
 
       - name: SonarQube Scan C# - Build
         run: |
-          dotnet build src --source $AZURE_ARTIFACTS_NUGET_REGISTRY_URL
+          dotnet build src --source $AZURE_ARTIFACTS_NUGET_REGISTRY_URL --no-incremental
 
       - name: SonarQube Scan C# - Test
         continue-on-error: true # dotnet test returns an error if the tests fails. Can't find a flag for making it ignore failed tests...
