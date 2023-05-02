@@ -1,6 +1,8 @@
 on:
   pull_request:
     types: [ opened, synchronize, reopened ]
+    paths:
+      - "**/*.go"
 
 name: SonarQube Scan on PR
 run-name: Scan - ${{ github.event.head_commit.message }}
