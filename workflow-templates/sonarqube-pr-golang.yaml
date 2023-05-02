@@ -14,9 +14,9 @@ jobs:
         id: generate_token
         uses: tibdex/github-app-token@v1
         with:
-          app_id: ${{ secrets.TEST_APP_ID }}
-          installation_id: ${{ secrets.TEST_APP_INSTALLATION_ID }}
-          private_key: ${{ secrets.TEST_APP_PEM_FILE }}
+          app_id: ${{ secrets.APP_ID_READ_ALL_REPOS }}
+          installation_id: ${{ secrets.APP_INSTALLATION_ID_READ_ALL_REPOS }}
+          private_key: ${{ secrets.APP_PEM_FILE_READ_ALL_REPOS }}
 
       - uses: actions/checkout@v3
         with:
@@ -31,9 +31,9 @@ jobs:
   
       - name: Generate Code Coverage report
         env:
-          GITHUB_TOKEN_TEST: ${{ steps.generate_token.outputs.token }}
+          READ_ALL_REPOS_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
-          git config --global url."https://${GITHUB_TOKEN_TEST}@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://${READ_ALL_REPOS_TOKEN}@github.com/".insteadOf "https://github.com/"
           go env -w GOPRIVATE=github.com/snowsoftwareglobal
           go mod download
           go test -coverprofile=coverage.out     
