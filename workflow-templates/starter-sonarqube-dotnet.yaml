@@ -94,7 +94,6 @@ jobs:
           dotnet build src --source $NUGET_PACKAGE_REGISTRY_URL 
 
       - name: Dotnet Test
-        continue-on-error: true # dotnet test returns an error if the tests fails. Can't find a flag for making it ignore failed tests...
         run: |
           dotnet-coverage collect 'dotnet test src --logger "trx" --results-directory:"test-results"' -f xml -o '/root/project/code-coverage/coverage.xml'
 
