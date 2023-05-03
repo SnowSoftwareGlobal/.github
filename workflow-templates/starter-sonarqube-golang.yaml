@@ -21,31 +21,22 @@ run-name: Scan - ${{ github.event.head_commit.message }}
 jobs:
   sonarqube:
     runs-on: [self-hosted, linux, sonarqube]
+    container: golang:1.20
     steps:
-      - name: Generate token for dependency fetching
-        id: generate_token
-        uses: tibdex/github-app-token@v1
+      # Add ssh-key with read-access to all SnowSoftwareGlobal repositories
+      - uses: webfactory/ssh-agent@v0.7.0
         with:
-          app_id: ${{ secrets.APP_ID_READ_ALL_REPOS }}
-          installation_id: ${{ secrets.APP_INSTALLATION_ID_READ_ALL_REPOS }}
-          private_key: ${{ secrets.APP_PEM_FILE_READ_ALL_REPOS }}
+            ssh-private-key: ${{ secrets.SSH_READ_ALL }}
 
       - uses: actions/checkout@v3
         with:
           # Disabling shallow clone is recommended for improving relevancy of reporting
           fetch-depth: 0
-          persist-credentials: true
-          token: ${{ steps.generate_token.outputs.token }}
-
-      - uses: actions/setup-go@v4
-        with:
-          go-version: '>=1.17.0'
   
       - name: Generate Code Coverage report
-        env:
-          READ_ALL_REPOS_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
-          git config --global url."https://${READ_ALL_REPOS_TOKEN}@github.com/".insteadOf "https://github.com/"
+          # Use ssh with the read-all key instead of https
+          git config --global --add url."git@github.com:".insteadOf "https://github.com/"
           go env -w GOPRIVATE=github.com/snowsoftwareglobal
           go mod download
           go test -coverprofile=coverage.out     
