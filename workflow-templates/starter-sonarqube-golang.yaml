@@ -23,6 +23,19 @@ jobs:
     runs-on: [self-hosted, linux, sonarqube]
     container: golang:1.20
     steps:
+    
+      # This can be removed once it's successful. It's only here to make sure that the SonarQube project has time to be created
+      - name: Check that the SonarQube project exists
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          status_code=$(curl -u ${SONAR_TOKEN}: -s -o /dev/null -w "%{http_code}" "${SONAR_HOST_URL}api/components/show?component=${REPO_NAME}")
+          if [ "${status_code}" -eq 404 ] ; then
+            exit 1
+          fi
+
       # Add ssh-key with read-access to all SnowSoftwareGlobal repositories
       - uses: webfactory/ssh-agent@v0.7.0
         with:
