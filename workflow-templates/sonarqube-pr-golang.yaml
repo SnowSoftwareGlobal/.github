@@ -3,6 +3,12 @@ on:
     types: [ opened, synchronize, reopened ]
     paths:
       - "**/*.go"
+  push:
+    branches:
+      - 'main'
+      - 'master'
+      - 'develop'
+      - 'release'
 
 name: SonarQube Scan on PR
 run-name: Scan - ${{ github.event.head_commit.message }}
