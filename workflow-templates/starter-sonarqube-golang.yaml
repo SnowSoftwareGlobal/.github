@@ -20,7 +20,7 @@ name: SonarQube Scan - Golang
 run-name: Scan - ${{ github.event.head_commit.message }}
 jobs:
   sonarqube:
-    runs-on: [self-hosted, linux, sonarqube]
+    runs-on: [self-hosted, sonarqube]
     container: golang:1.20
     steps:
       # Add ssh-key with read-access to all SnowSoftwareGlobal repositories
