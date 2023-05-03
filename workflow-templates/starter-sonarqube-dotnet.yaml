@@ -29,7 +29,7 @@ name: SonarQube Scan - Dotnet
 run-name: Scan - ${{ github.event.head_commit.message }}
 jobs:
   sonarqube:
-    runs-on: [self-hosted, linux, sonarqube]
+    runs-on: [self-hosted, sonarqube]
     container: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
       - name: Checkout Repo

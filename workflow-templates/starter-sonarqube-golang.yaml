@@ -20,7 +20,7 @@ name: SonarQube Scan - Golang
 run-name: Scan - ${{ github.event.head_commit.message }}
 jobs:
   sonarqube:
-    runs-on: [self-hosted, linux, sonarqube]
+    runs-on: [self-hosted, sonarqube]
     steps:
       - name: Generate token for dependency fetching
         id: generate_token
