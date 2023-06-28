@@ -38,7 +38,7 @@ jobs:
           git config --global --add url."git@github.com:".insteadOf "https://github.com/"
           go env -w GOPRIVATE=github.com/snowsoftwareglobal
           go mod download
-          go test -coverprofile=coverage.out     
+          go test -v ./... -coverprofile=coverage.out     
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v1.2.0
