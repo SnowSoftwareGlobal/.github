@@ -1,0 +1,17 @@
+name: OpenAPI Validation
+
+on:
+  - pull_request
+
+jobs:
+  openapi-validation:
+    # https://github.com/SnowSoftwareGlobal/api-guidelines/blob/main/.github/workflows/README.md#openapi-validation
+    uses: SnowSoftwareGlobal/api-guidelines/.github/workflows/openapi-validation.yml@v0.9.17
+    with:
+      # Required - Relative path from the respoistory root to the OpenAPI document.
+      openapi_file: 'api/openapi.json'
+      # Optional - If this OpenAPI document has been released to the public, specifying the corresponding GitHub tag will enable backwards compatibility checks to be run.
+      previous_version: 'v1.0.0'
+      # Optional - If a previous_version has been specified, a list of changes since that release will be automatically generated to the specified file.
+      changelog_file: 'api/change.log'
+    secrets: inherit # pass all secrets (https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow)
