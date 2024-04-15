@@ -8,7 +8,7 @@ jobs:
     # https://github.com/SnowSoftwareGlobal/api-guidelines/blob/main/.github/workflows/README.md#openapi-validation
     uses: SnowSoftwareGlobal/api-guidelines/.github/workflows/openapi-validation.yml@v1.0
     with:
-      # Required - Relative path from the respoistory root to the OpenAPI document.
+      # Required - Relative path from the repository root to the OpenAPI document.
       openapi_file: 'api/openapi.json'
       # Optional - If this OpenAPI document has been released to the public, specifying the corresponding GitHub tag will enable backwards compatibility checks to be run.
       previous_version: 'v1.0.0'
