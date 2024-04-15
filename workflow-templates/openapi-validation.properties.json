@@ -1,6 +1,6 @@
 {
     "name": "OpenAPI Validation Workflow",
-    "description": "Validate that an OpenAPI document follows the API style guide, and is backwards compatible.",
+    "description": "Validate that an OpenAPI document follows the API style guide and is backwards compatible.",
     "iconName": "octicon checklist",
     "categories": [
       "API"
