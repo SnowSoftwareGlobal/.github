@@ -1,0 +1,26 @@
+name: HTTPRoutes Validation
+
+on:
+  - pull_request
+
+jobs:
+  # This block can be copied to validate QA (httproutes-validation-qa) and production (httproutes-validation-production). 
+  httproutes-validation-development:
+    # https://github.com/SnowSoftwareGlobal/api-deploy-util#github-workflow
+    uses: SnowSoftwareGlobal/api-deploy-util/.github/workflows/httproutes-validation.yml@v1.0
+    with:
+      # Required - GitHub repo that contains the OpenAPI file.
+      openapi_repo: 'SnowSoftwareGlobal/api-pet-store'
+      # Required - Version of repo that contains the OpenAPI file.
+      openapi_version: 'v0.1.2'
+      # Required - Relative path to the OpenAPI file (JSON or YAML). 
+      openapi_file: 'api/pet-store.yaml'
+      # Required - The k8s namespace of the backend implementation.
+      backend_namespace: 'api'
+      # Required - The name of the backend implementation.
+      backend_name: 'api-pet-store'
+      # Default: 8080 - The port the service is listening on for REST calls.
+      backend_port: 8080
+      # Required - The directory that contains the HTTPRoute definitions.
+      routes_dir: 'k8s/api-pet-store/development/base/routes'
+    secrets: inherit # pass all secrets (https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
