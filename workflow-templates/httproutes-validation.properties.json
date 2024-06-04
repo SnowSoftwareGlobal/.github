@@ -1,0 +1,9 @@
+{
+    "name": "HTTPRoutes Validation Workflow",
+    "description": "Validate HTTPRoute defintions in your deployment repo using an OpenAPI document.",
+    "iconName": "octicon checklist",
+    "categories": [
+      "API"
+    ]
+  }
+  
