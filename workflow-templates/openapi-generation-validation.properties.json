@@ -1,6 +1,6 @@
 {
   "name": "OpenAPI Generation and Validation Workflow",
-  "description": "Work flow that will automate the generation of your open api specification and then provide validation comments as part of the same pull request. This workflow will also generate a markdown file which allows for easy viewing of OpenAPI specifition from within Github. ",
+  "description": "Workflow that will automate the generation of your open api specification and then provide validation comments as part of the same pull request. This workflow will also generate a markdown file which allows for easy viewing of OpenAPI specifition from within Github.",
   "iconName": "octicon checklist",
   "categories": [
     "Go"

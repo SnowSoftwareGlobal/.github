@@ -1,5 +1,5 @@
 # Work flow that will automate the generation of your open api specification and then provide validation comments as part of the same pull request
-name: OpenAPI Specification
+name: OpenAPI Specification Generation and Validation
 on:
   - pull_request
 jobs:
