@@ -1,0 +1,30 @@
+# Work flow that will automate the generation of your open api specification and then provide validation comments as part of the same pull request
+name: OpenAPI Specification
+on:
+  - pull_request
+jobs:
+  generate-specification:
+    name: Generate specification
+    uses: SnowSoftwareGlobal/platform-go-openapi/.github/workflows/auto-generate-openapi-specification.yaml@feat/auto-generation-github-action
+    with:
+      # Required - Arguments as per https://github.com/SnowSoftwareGlobal/platform-go-openapi?tab=readme-ov-file#command-line-arguments.
+      command_line_arguments: "--embed --apiversion=0.0.1 --embeddir=meta --embedendpoint=meta --nolinter --apititle=\"SaaS Management API\" --apidescription=\"An API for managing SaaS Management entities\""
+    secrets: inherit # pass all secrets (https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow)
+  validate-specification-yaml:
+    name: Validate specification
+    needs: generate-specification
+    uses: SnowSoftwareGlobal/api-guidelines/.github/workflows/openapi-validation.yml@v1.0.2
+    with:
+      # Required - Relative path from the repository root to the OpenAPI document.
+      openapi_file: 'meta/v1/openapi.yaml'
+    secrets: inherit # pass all secrets (https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow)
+  generate-markdown:
+    name: Generate markdown
+    uses: SnowSoftwareGlobal/api-guidelines/.github/workflows/openapi-to-markdown.yml@v1.0.2
+    needs: generate-specification
+    with:
+      # Required - Relative path from the repository root to the OpenAPI document.
+      openapi_file: 'meta/v1/openapi.yaml'
+      # Required - Relative path from the repository root to target location of resultant markdown file.
+      markdown_file: 'meta/v1/openapi.md'
+    secrets: inherit # pass all secrets (https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow)
