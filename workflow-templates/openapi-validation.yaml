@@ -14,4 +14,6 @@ jobs:
       previous_version: 'v1.0.0'
       # Optional - If a previous_version has been specified, a list of changes since that release will be automatically generated to the specified file.
       changelog_file: 'api/change.log'
+      # Optional - Generate documention in Markdown format from the OpenAPI to the relative path specified.
+      markdown_file: 'api/openapi.md'
     secrets: inherit # pass all secrets (https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow)
