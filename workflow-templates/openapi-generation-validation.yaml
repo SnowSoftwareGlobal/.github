@@ -5,7 +5,7 @@ on:
 jobs:
   generate-specification:
     name: Generate specification
-    uses: SnowSoftwareGlobal/platform-go-openapi/.github/workflows/auto-generate-openapi-specification.yaml@feat/auto-generation-github-action
+    uses: SnowSoftwareGlobal/platform-go-openapi/.github/workflows/auto-generate-openapi-specification.yaml@v0.13.0
     with:
       # Required - Arguments as per https://github.com/SnowSoftwareGlobal/platform-go-openapi?tab=readme-ov-file#command-line-arguments.
       command_line_arguments: "--embed --apiversion=0.0.1 --embeddir=meta --embedendpoint=meta --nolinter --apititle=\"SaaS Management API\" --apidescription=\"An API for managing SaaS Management entities\""
@@ -13,18 +13,14 @@ jobs:
   validate-specification-yaml:
     name: Validate specification
     needs: generate-specification
-    uses: SnowSoftwareGlobal/api-guidelines/.github/workflows/openapi-validation.yml@v1.0.2
+    uses: SnowSoftwareGlobal/api-guidelines/.github/workflows/openapi-validation.yml@v1.0.3
     with:
       # Required - Relative path from the repository root to the OpenAPI document.
       openapi_file: 'meta/v1/openapi.yaml'
-    secrets: inherit # pass all secrets (https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow)
-  generate-markdown:
-    name: Generate markdown
-    uses: SnowSoftwareGlobal/api-guidelines/.github/workflows/openapi-to-markdown.yml@v1.0.2
-    needs: generate-specification
-    with:
-      # Required - Relative path from the repository root to the OpenAPI document.
-      openapi_file: 'meta/v1/openapi.yaml'
-      # Required - Relative path from the repository root to target location of resultant markdown file.
-      markdown_file: 'meta/v1/openapi.md'
+      # Optional - If this OpenAPI document has been released to the public, specifying the corresponding GitHub tag will enable backwards compatibility checks to be run.
+      previous_version: 'v1.0.0'
+      # Optional - If a previous_version has been specified, a list of changes since that release will be automatically generated to the specified file.
+      changelog_file: 'api/change.log'
+      # Optional - Generate documention in Markdown format from the OpenAPI to the relative path specified.
+      markdown_file: 'api/openapi.md'
     secrets: inherit # pass all secrets (https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow)
