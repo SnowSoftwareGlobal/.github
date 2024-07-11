@@ -13,7 +13,7 @@ jobs:
   validate-specification-yaml:
     name: Validate specification
     needs: generate-specification
-    uses: SnowSoftwareGlobal/api-guidelines/.github/workflows/openapi-validation.yml@v1.0.3
+    uses: SnowSoftwareGlobal/api-guidelines/.github/workflows/openapi-validation.yml@v1.0
     with:
       # Required - Relative path from the repository root to the OpenAPI document.
       openapi_file: 'meta/v1/openapi.yaml'
