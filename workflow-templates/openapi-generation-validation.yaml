@@ -5,7 +5,7 @@ on:
 jobs:
   generate-specification:
     name: Generate specification
-    uses: SnowSoftwareGlobal/platform-go-openapi/.github/workflows/auto-generate-openapi-specification.yaml@v0.13.0
+    uses: SnowSoftwareGlobal/platform-go-openapi/.github/workflows/auto-generate-openapi-specification.yaml@v0.13.1
     with:
       # Required - Arguments as per https://github.com/SnowSoftwareGlobal/platform-go-openapi?tab=readme-ov-file#command-line-arguments.
       command_line_arguments: "--embed --apiversion=0.0.1 --embeddir=meta --embedendpoint=meta --nolinter --apititle=\"SaaS Management API\" --apidescription=\"An API for managing SaaS Management entities\""
